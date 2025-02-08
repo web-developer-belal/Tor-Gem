@@ -1,5 +1,5 @@
 <?php
-namespace Tor\Gem;
+namespace Synthora\Gem;
 use Illuminate\Support\ServiceProvider;
 
 class Tor extends ServiceProvider

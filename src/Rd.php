@@ -1,6 +1,6 @@
 <?php
 
-namespace Tor\Gem;
+namespace Synthora\Gem;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\File;

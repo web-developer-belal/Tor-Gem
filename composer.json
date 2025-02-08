@@ -1,11 +1,11 @@
 {
-    "name": "tor/gem",
-    "description": "Tor package for core built",
+    "name": "synthora/gem",
+    "description": "Synthora package for core built",
     "type": "library",
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Tor\\Gem\\": "src/"
+            "Synthora\\Gem\\": "src/"
         }
     },
     "authors": [
@@ -14,6 +14,13 @@
             "email": "programmer.m.belal@gmail.com"
         }
     ],
+    "extra": {
+    "laravel": {
+        "providers": [
+            "Synthora\\Gem\\Tor"
+        ]
+    }
+},
     "minimum-stability": "dev",
     "require": {}
 }

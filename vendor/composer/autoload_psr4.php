@@ -6,5 +6,5 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Tor\\Gem\\' => array($baseDir . '/src'),
+    'Synthora\\Gem\\' => array($baseDir . '/src'),
 );
