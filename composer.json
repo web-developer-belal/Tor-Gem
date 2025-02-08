@@ -1,0 +1,19 @@
+{
+    "name": "tor/gem",
+    "description": "Tor package for core built",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Tor\\Gem\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Md Belal Hossen",
+            "email": "programmer.m.belal@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
