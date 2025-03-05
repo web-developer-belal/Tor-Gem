@@ -13,6 +13,6 @@ class Tor extends ServiceProvider
 
     public function boot()
     {
-        app(Rd::class)->initiateValidation();
+        app(Rd::class)->a5();
     }
 }
