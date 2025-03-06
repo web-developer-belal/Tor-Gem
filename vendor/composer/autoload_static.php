@@ -9,7 +9,7 @@ class ComposerStaticInit38cbdfb1d61a0100b8ba274907bc849e
     public static $prefixLengthsPsr4 = array (
         'S' => 
         array (
-            'Synthora\\Gem\\' => 8,
+            'Synthora\\Gem\\' => 13,
         ),
     );
 
