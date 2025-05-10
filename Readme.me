@@ -1,0 +1,42 @@
+Make sure all your changes are committed:
+
+git add .
+git commit -m "Prepare for version v1.2.0"
+Replace v1.2.0 with your actual version.
+
+✅ 2. Create a Git tag
+You can use either an annotated tag (recommended) or a lightweight tag.
+
+Annotated tag (recommended):
+git tag -a v1.2.0 -m "Release version v1.2.0"
+Lightweight tag (alternative):
+bash
+Copy
+Edit
+git tag v1.2.0
+✅ 3. Push the tag to the remote repository
+To push a single tag:
+
+bash
+Copy
+Edit
+git push origin v1.2.0
+To push all tags:
+
+bash
+Copy
+Edit
+git push origin --tags
+✅ Optional: Check your tags
+List local tags:
+
+bash
+Copy
+Edit
+git tag
+List tags in remote:
+
+bash
+Copy
+Edit
+git ls-remote --tags origin

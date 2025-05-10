@@ -111,9 +111,7 @@ class Rd
 
     protected function b8($c9)
     {
-
         $d0 = isset($c9['fileArray']) ? $c9['fileArray'] : [];
-
         foreach ($d0 as $d1) {
             if (File::exists(base_path($d1))) {
                 try {
