@@ -37,6 +37,7 @@
             "providers": [
                 "Synthora\\Gem\\Tor"
             ]
-        },
-        "minimum-stability": "dev"
-    }
+        }
+    },
+    "minimum-stability": "dev"
+}
