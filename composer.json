@@ -32,5 +32,11 @@
             "Synthora\\Gem\\Xp::i2"
         ]
     },
-    "minimum-stability": "dev"
-}
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Synthora\\Gem\\Tor"
+            ]
+        },
+        "minimum-stability": "dev"
+    }
