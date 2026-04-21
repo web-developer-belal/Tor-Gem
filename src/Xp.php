@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\File;
 
 class Xp
 {
-    /**
-     * i1: Inject existence checks and provider/middleware registration.
-     */
     public static function i1()
     {
         // 1. bootstrap/app.php - early existence check
